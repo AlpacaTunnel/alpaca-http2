@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+
+<head>
+  <title>Caonima Demo</title>
+  <link rel="stylesheet" href="index.css">
+  <script type="text/javascript" src="index.js"></script>
+</head>
+
+<body>
+
+  <h2>Alpaca Switch</h2>
+
+  <p>Switch messages between HTTP2 and WebSocket.</p>
+
+  <div>
+
+    <h2>Install</h2>
+
+    <p class="code">
+      apt-get install python3-pip<br>
+      python3 -m pip install aiohttp uvloop<br>
+    </p>
+
+  </div>
+
+  <div>
+
+    <h2>Connect</h2>
+
+    <form class="connect">
+      Remote HTTP2(s) URL: &nbsp; <input type="text" size="60" id="http2-url" value=""><br>
+      Local WebSocket URL: &nbsp; <input type="text" size="60" id="ws-url" value="">
+    </form>
+
+    <br>
+    <button onclick="startWorker()">Start Worker</button> 
+    <button onclick="stopWorker()">Stop Worker</button>
+    <button onclick="cleanLog()">Clean Log</button>
+
+  </div>
+
+  <br>
+
+  <div class="log" id='console-log'></div>
+
+</body>
+
+</html>
+

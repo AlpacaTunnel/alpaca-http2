@@ -4,13 +4,12 @@ import time
 import random
 import traceback
 import asyncio
-import os
 import logging
 from json.decoder import JSONDecodeError
 from aiohttp import web, WSMsgType
 
 from .socks5 import Socks5Parser
-from .ws_helper import ws_connect, ws_recv, ws_send
+from .ws_helper import ws_recv, ws_send
 from .multiplexing import Multiplexing, BINARY_PADDING, byte2int
 from .ctrl_msg import CtrlMsg
 
@@ -99,7 +98,7 @@ async def _wait_result(result_list, request_ctrl):
     response : CtrlMsg = None
     while response is None:
         response = _pop_result(result_list, request_ctrl)
-        logger.debug('wait response...')
+        logger.debug(f'wait response for {request_ctrl.dst_addr}:{request_ctrl.dst_port}...')
         await asyncio.sleep(0.1)
     return response
 
@@ -126,14 +125,14 @@ async def _s5_server(s5_reader, s5_writer, upstream_q, result_list, session_pool
     response = await _wait_result(result_list, request_ctrl)
 
     if not response.result:
-        logger.info(f'request failed, reason: {response.reason}')
+        logger.warning(f'connect failed, reason: {response.reason}')
         server_data = s5_conn.send_failed_response(1)
         s5_writer.write(server_data)
         s5_writer.close()
         return
 
     if response.stream_id in session_pool:
-        logger.info(f'will overwrite conflict stream_id: {response.stream_id}')
+        logger.warning(f'will overwrite conflict stream_id: {response.stream_id}')
 
     server_data = s5_conn.send_success_response()
     s5_writer.write(server_data)
@@ -238,7 +237,7 @@ async def _ws_binary_handler(session_pool, ws_data):
             return
 
         if stream_id not in session_pool:
-            logger.info(f'unknown stream_id: {stream_id}')
+            logger.warning(f'unknown stream_id: {stream_id}')
             return
 
         recv_buffer[:] = left_data
@@ -296,16 +295,16 @@ async def ws_server_handler(request):
                 await _ws_binary_handler(request.app.session_pool, ws_msg.data)
 
             else:
-                logger.info(f'got unknown type: {ws_msg.type}')
+                logger.warning(f'got unknown type: {ws_msg.type}')
 
     except Exception as e:
-        logger.info(f'Error: got Exception: {e}, details: {traceback.format_exc()}')
+        logger.error(f'Error: got Exception: {e}, details: {traceback.format_exc()}')
 
     finally:
         try:
             task.cancel()
         except Exception as e:
-            logger.info(f'failed to cancel task {e}')
+            logger.error(f'failed to cancel task {e}')
 
         await ws.close()
         logger.info(f'session from {peer} is closed')

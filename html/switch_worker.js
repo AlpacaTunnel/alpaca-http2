@@ -71,6 +71,11 @@ function switchMessage(event, remote_h2, ws) {
             body: event.data
         }
     ).then(function (response) {
+        if (! response.ok) {
+            printLog("Failed to fetch remote URL: " + response.status);
+            return;
+        }
+
         if (response.headers.get('Content-Type').includes('text/plain')) {
             response.text().then(function (text) { ws.send(text); });
             return;

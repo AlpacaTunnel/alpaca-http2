@@ -254,6 +254,14 @@ async def _handle_binary_request(request, response):
         await _inform_eof(response, mp_wrapper, stream_id)
         return await _close_http(response)
 
+    if not s5_data:
+        logger.info('downstream closed for stream_id: %s', stream_id)
+        try:
+            session.s5_writer.close()
+        except Exception:
+            pass
+        return await _close_http(response)
+
     # h2_to_s5
     try:
         session.s5_writer.write(s5_data)

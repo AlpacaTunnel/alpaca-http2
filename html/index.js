@@ -1,7 +1,7 @@
 var switch_worker = undefined;
 
 window.onload = function() {
-    document.getElementById("http2-url").value = document.URL + 'alpaca_url/';
+    document.getElementById("http2-url").value = '/alpaca_url/';
     document.getElementById("ws-url").value = "ws://127.0.0.1:8080/";
 }
 

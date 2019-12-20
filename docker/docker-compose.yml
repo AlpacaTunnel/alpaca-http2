@@ -1,0 +1,17 @@
+version: "2"
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /var/www/vhosts/:/var/www/vhosts/
+    environment:
+      DOMAINS: 'caonima.com'
+      ALPACA_LOCATION: '/alpaca_url/'
+      STAGE: 'local'
+
+  alpaca:
+    build: ./alpaca

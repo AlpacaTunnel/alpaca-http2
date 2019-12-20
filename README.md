@@ -17,3 +17,18 @@ The proxy consists of 4 parts, and upward data flow as below:
 And downward vice versa.
 
 With Chrome App, the local Websockets server and local Browser can be merged into one (no Websockets needed in such an App), but since Chrome will remove App in the future, so the above workflow was introduced. And it not only works on Chrome, but also on Firefox, and other modern browsers as well.
+
+
+# Usage
+
+First configure and deploy the remote Nginx server and HTTP application into you server. You can use [Docker-compose](https://github.com/AlpacaTunnel/alpaca-switch/tree/master/docker) for help. Remember the `ALPACA_LOCATION` and `static files subfolder`.
+
+Then start the local server with the cmd:
+
+```sh
+python3 main.py --role local
+```
+
+Then open a web browser in your local PC, goto the subfolder of your domain. In the page, change `Remote HTTP2(s) URL` to the value of `ALPACA_LOCATION`. Click `Start Worker` to establish Websockets connections to the local server.
+
+Now you can use the socks5 proxy server listening at `127.0.0.1:1080`.
